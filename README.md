@@ -6,10 +6,10 @@
  - Drop all duplicated rows based on field ID_CLIENT
 
 Postprocessing :
-1- realo_cleaning : Generate Three link files.txt (projet,immeuble,avendre/alouer )
-2- /home/h.moussaoui/Realo/Realo/spiders/spider_projet.py : Extract all Project ads.
-3- /home/h.moussaoui/Realo/Realo/spiders/spider_listing.py : Extract all to Buy/to Rent ads.
-4- /home/h.moussaoui/Realo/Realo/spiders/spider_immeuble.py : Extract all Immeuble Ads.
+- realo_cleaning : Generate Three link files.txt (projet,immeuble,avendre/alouer )
+- /home/h.moussaoui/Realo/Realo/spiders/spider_projet.py : Extract all Project ads.
+-/home/h.moussaoui/Realo/Realo/spiders/spider_listing.py : Extract all to Buy/to Rent ads.
+- /home/h.moussaoui/Realo/Realo/spiders/spider_immeuble.py : Extract all Immeuble Ads.
 
 
 ## Follow this steps
