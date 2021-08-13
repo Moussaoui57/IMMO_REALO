@@ -1,0 +1,34 @@
+import scrapy
+import re
+from scrapy.http import Request, FormRequest
+
+class SpiderSpider(scrapy.Spider):
+    name = 'spider'
+    allowed_domains = ['realo.be']
+    #start_urls =['https://www.realo.be/sitemap/generated/listing.fr.1.xml','https://www.realo.be/sitemap/generated/address.xml','https://www.realo.be/sitemap/generated/contact.xml','https://www.realo.be/sitemap/generated/street.xml','https://www.realo.be/sitemap/generated/contact.xml','https://www.realo.be/sitemap/generated/street.xml','https://www.realo.be/sitemap/generated/locality.xml','https://www.realo.be/sitemap/generated/sublocality.xml'] #['http://https://www.realo.be/fr/']
+    start_urls =[]
+    def parse4(self, response):
+        item={}
+        l=[]
+        list_an=re.findall("(https[^<>\"]+)", response.text)
+        #l[list_ann]
+        print('*************************',list_an)
+        for i in list_an:
+            item['ANNONCE_TEXT']=i 
+        #print("******************************",len(list_an))
+            yield item 
+
+    def parse(self , response):
+        
+            print('****************************************',response.url)
+            #url = url.strip("%0A")
+            yield Request(url, self.parse_detail)
+
+
+    def parse_detail(self, response):
+        print("************************************************************************************************")
+        item = {}
+        item["ANNONCE_LINK"] = response.url
+        item["NOM"] = response.xpath('//div[@class="type"]/strong/text()').extract_first().strip()
+        item["ID_CLIENT"] = response.url.split("=")[1]
+        yield item

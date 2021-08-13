@@ -1,0 +1,77 @@
+import scrapy
+import re
+from scrapy.http import Request, FormRequest
+
+class SpiderSpider(scrapy.Spider):
+    name = 'spider'
+    allowed_domains = ['realo.be']
+    #start_urls =['https://www.realo.be/sitemap/generated/listing.fr.1.xml','https://www.realo.be/sitemap/generated/address.xml','https://www.realo.be/sitemap/generated/contact.xml','https://www.realo.be/sitemap/generated/street.xml','https://www.realo.be/sitemap/generated/contact.xml','https://www.realo.be/sitemap/generated/street.xml','https://www.realo.be/sitemap/generated/locality.xml','https://www.realo.be/sitemap/generated/sublocality.xml'] #['http://https://www.realo.be/fr/']
+    #start_urls =['https://www.realo.be/sitemap/generated/address.xml']
+    start_urls=['https://www.realo.be/fr/08380-signy-le-petit/4329010791?l=1793654664',"https://www.realo.be/fr/1000-brussel/5194008?l=1120738504",'https://www.realo.be/fr/1000-brussel/5198781?l=899792826','https://www.realo.be/fr/1000-brussel/5198740?l=253987219']
+    def parse4(self, response):
+        item={}
+        l=[]
+        list_an=re.findall("(https[^<>\"]+)", response.text)
+        #l[list_ann]
+        print('*************************',list_an)
+        for i in list_an:
+            item['ANNONCE_TEXT']=i 
+        #print("******************************",len(list_an))
+            yield item 
+
+    def parse11(self , response):
+            #url = url.strip("%0A")
+            url=response.url
+            print("****************",url)
+            yield scrapy.Request(url, self.parse_detail)
+
+
+    def parse(self, response):
+        print("************************************************************************************************")
+        item = {}
+        item["ANNONCE_LINK"] = response.url
+        item["FROM_SITE"]="REALO"
+        item["NOM"] = response.xpath('//div[@class="type"]/strong/text()').extract_first().strip()
+        item["ID_CLIENT"] = response.url.split("=")[1]
+        item['ANNONCE_DATE']=response.xpath('//div[@class="type"]').get().split("il y a")[-1].replace("\n","").replace("\t","").replace("</div>","")
+       	item["ACHAT_LOC"]=re.findall('data-way=(.*)',response.text)
+        item['CATEGORIE']=response.xpath('//div[@class="type"]/strong/text()').extract_first().strip().split(" ")[0]
+        item[" NEUF_IND"]="N"
+        item["ADRESSE"]=response.xpath("//h1[@class='address']").get().strip().replace("\t","").split("\n")[-2]
+        a=re.findall('\d{1,5}',item["ADRESSE"])
+        item["CP"]=a[0]
+        item["DEPARTEMENT"]=item["CP"][:-2]
+        item["VILLE"]=response.xpath("//h1[@class='address']").get().strip().replace("\t","").split("\n")[-2].split(" ")[-1]
+        item["QUARTIER"]=re.findall('<h2 class="title">(.*)',response.text)[-1].split(" ")[-1].replace("</h2>","")
+        item['PROVINCE']=response.xpath('//h6[@class="regular"]/text()').get().replace("\t","").replace("\t","").replace("\n","").split(" ")[-1]
+        item["ANNONCE_TEXT"]=' '.join(response.xpath('//div[@class="component-property-description "]/div/p/text()').extract()).replace("\t","").replace("\n","")
+        item["ETAGE"]=""
+        item["NB_ETAGE"]=""
+        item["LALTITUDE"]=re.findall('data-latlng="(.*]?)',response.text)[0].split(",")[0].replace("[","")
+        item["LONGITUDE"]=re.findall('data-latlng="(.*]?)',response.text)[0].split(",")[1].replace("]","")
+        item["M2_TOTALE"]= ' '.join(response.xpath('//div[@class="component-property-features"]//tbody/tr[4]//td/text()').extract()).replace("\t","").replace("\n","").split(" ")[-1].replace('m','')
+        item["SURFACE_TERRAIN"]=' '.join(response.xpath('//div[@class="component-property-features"]//tbody/tr[6]//td/text()').extract()).replace("\t","").replace("\n","").split(" ")[-1].replace('m','')
+        item["NB_GARAGE"]=' '.join(response.xpath('//div[@class="component-property-features"]//tbody/tr[10]//td/text()').extract()).replace("\t","").replace("\n","").split(" ")[-1].replace('m','')
+        item["PHOTO"]=response.xpath("//div[@class='gallery']/@data-images-count").get()
+        item["PIECE"]=' '.join(response.xpath('//div[@class="component-property-features"]//tbody/tr[3]//td/text()').extract()).replace("\t","").replace("\n","").split(" ")[-1].replace('m','')
+        item["PRIX"]=response.xpath("//div[@class='col details']//span[@class='price']/text()").get().replace(u"\u20ac","").replace(".","")
+        item["PRIX_M2"]=""
+        item["URL_PROMO"]=""
+        item["STOCK_NEUF"]=""
+        item["PAYS_AD"]=response.xpath("//div[@class='popover-container hidden']//a/text()").get().replace("\n","")
+        item["PRO_IND"]="Y"
+        item["SELLER_TYPE"]="Professional"
+        item["MINI_SITE_URL"]=response.xpath("//div[@class='row name']/a/@href").get()
+        item["MINI_SITE_ID"]=' '.join(re.findall('"propertyCompanyIdDimension":(.*,?)',response.text)).split(",")[0]
+        item["AGENCE_NOM"]=response.xpath("//div[@class='grid module-company__container']/div/a/text()").get()
+        item["AGENC_ADRESSE"]=response.xpath("//div[@class='grid module-company__container']/div[@class='row address']/text()").get().replace("\t","").replace("\n","").split(",")[0] 
+        a=response.xpath("//div[@class='grid module-company__container']/div[@class='row address']/text()").get().replace("\t","").replace("\n","")
+        item["AGENCE_CP"]=re.findall('\d{1,5}',a)[1]
+        item["AGENCE_VILLE"]=response.xpath("//div[@class='grid module-company__container']/div[@class='row address']/text()").get().replace("\t","").replace("\n","").split(" ")[-1]
+        item["AGENCE_DEPARTEMENT"]=item["AGENCE_CP"][0:-2]
+        item["EMAIL"]=""
+        item["WEBSITE"]=""
+
+
+
+        yield item

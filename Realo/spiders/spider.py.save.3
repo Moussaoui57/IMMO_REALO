@@ -1,0 +1,14 @@
+import scrapy
+import re
+from scrapy.http import Request, FormRequest
+
+class SpiderSpider(scrapy.Spider):
+    name = 'spider'
+    allowed_domains = ['realo.be']
+    #start_urls =['https://www.realo.be/sitemap/generated/listing.fr.1.xml','https://www.realo.be/sitemap/generated/address.xml','https://www.realo.be/sitemap/generated/contact.xml','https://www.realo.be/sitemap/generated/street.xml','https://www.realo.be/sitemap/generated/contact.xml','https://www.realo.be/sitemap/generated/street.xml','https://www.realo.be/sitemap/generated/locality.xml','https://www.realo.be/sitemap/generated/sublocality.xml'] #['http://https://www.realo.be/fr/']
+    #start_urls =['https://www.realo.be/sitemap/generated/address.xml']
+    start_urls=['https://www.realo.be/fr/08380-signy-le-petit/4329010791?l=1793654664',"https://www.realo.be/fr/1000-brussel/5194008?l=1120738504",'https://www.realo.be/fr/1000-brussel/5198781?l=899792826','https://www.realo.be/fr/1000-brussel/5198740?l=253987219']
+    def parse4(self, response):
+        item={}
+        l=[]
+        list_an=re.findall("(https[^<>\"]+)", response.text)
