@@ -18,24 +18,16 @@ Postprocessing :
 ```
 pip install -r requirements.txt
 ```
-
 - Launch a spider `Extract_links.py` in Screen
 ``` 
 scrapy crawl name_of_spider -o name_file_links.txt
-```
-- Modify the script `ACHATTERRAIN.py` with the new file name `name_file_links.txt`
-```
 
 - Launch all spiders  in Screen
 ``` 
 scrapy crawl name_of_spider -o name_file_csv.csv
 ```
-
 - Drop duplicate
 ```
 sort -u -k3,3 -t";" name_file_csv.csv > file_without_dup.csv
 ```
-# FR_ACHATTERRAIN
-# FR_ACHATTERRAIN
-
 # IMMO_REALO
